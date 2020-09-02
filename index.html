@@ -1,16 +1,41 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
   <title>바닐라코딩</title>
 </head>
+
 <body>
   <div class="content">
     <h1>Visualize Sorting Algorithms</h1>
-    <img src="./assets/images/chicken.jpg" />
-    <p>README.md를 읽어보고 과제를 시작하세요.</p>
+    <div id="sorting-space"></div>
+    <div id="question-container">
+      <div id="question-data-wrap">
+        <p class="question-required">Enter the numbers you want to sort</br>
+          (Limit number of items = 10, </br>
+          Number range = 1 ~ 25)</p>
+        <input id="input-data" placeholder="ex) 3,6,7,1,2,10,25" value="5,8,15,2,1"/>
+        <input id="button-confirm" type="button" value="Confirm" />
+      </div>
+      <div id="question-sort-wrap">
+        <p class="question-required">Select the Sorting Algorithms</p>
+        <div>
+          <input type="radio" name="sort" id="select-bubble-sort" value="bubblesort" />
+          <label for="sort">Bubble Sort</label>
+          <input type="radio" name="sort" id="select-merge-sort" value="mergesort" checked/>
+          <label for="sort">Merge Sort</label>
+        </div>
+      </div>
+      <div>
+        </br>
+        <input id="button-start" class="display-none" type="button" value="Start Sorting" />
+      </div>
+
+    </div>
   </div>
   <script src="./app/index.js"></script>
 </body>
+
 </html>
