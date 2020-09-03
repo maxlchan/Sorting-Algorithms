@@ -91,7 +91,7 @@ function createNode(number, index) {
   node.classList.add("node");
   node.classList.add("trasition-effect");
   node.dataset.value = number;
-  node.dataset.absoluteIndex = index;
+  node.dataset.index = index;
 
   const text = document.createElement("span");
   text.classList.add("node-element");
@@ -238,48 +238,43 @@ function pullDownBar(leftGroup, rightGroup, currentQueueIndex) {
   }, 1000);
 }
 
-function findleftNodesLength(node) {
-  let leftNodeCount = 0;
-
-  function find(node) {
-    if (!node) return;
-    leftNodeCount++;
-    find(node.previousSibling);
-  }
-
-  find(node.previousSibling);
-  return leftNodeCount;
-}
-
 function pullUpBar(nodes, currentQueueIndex) {
   let currentIndex = 0;
 
-  const existingFirstNode = nodes.find((node) => node.dataset.index === "0");
-  const leftNodesLength = findleftNodesLength(existingFirstNode);
 
   function pullUpCurrentBar(currentIndex) {
     if (currentIndex >= nodes.length) {
+
       currentQueueIndex++;
-      if (currentQueueIndex >= mergeSortQueue.length) {
-        $buttonConfirm.addEventListener("click", checkInputValidation);
-        return;
-      }
+      setTimeout(() => {
+        const lastNode = nodes[nodes.length - 1];
+        nodes.forEach( currentNode => {
+          currentNode.classList.remove("trasition-effect");
+          currentNode.style.transform = "none";
+          $sortingSpace.insertBefore(currentNode, lastNode);
+          currentNode.classList.add("trasition-effect");
+        });
+
+        if (currentQueueIndex >= mergeSortQueue.length) {
+          $buttonConfirm.addEventListener("click", checkInputValidation);
+          return;
+        }
+      }, 500);
+
+
       mergeSortQueue[currentQueueIndex](currentQueueIndex);
       return;
     }
 
     setTimeout(() => {
       const currentNode = nodes[currentIndex];
-      const originalNodeIndex = Number(currentNode.dataset.absoluteIndex);
-      const changedNodeIndex = currentIndex + leftNodesLength;
+      const originalNodeIndex = Number(currentNode.dataset.index);
+      const changedNodeIndex = currentIndex;
       const difference = 100 * (changedNodeIndex - originalNodeIndex);
 
       currentNode.style.top = "0%";
       currentNode.style.transform = `translate(${difference}%)`;
-      // debugger;
-      // console.log(nodes[currentIndex + 1]);
-      // console.log(currentNode);
-      // $sortingSpace.insertBefore(nodes[currentIndex + 1], currentNode);
+
       currentIndex++;
       pullUpCurrentBar(currentIndex);
     }, 1000);
