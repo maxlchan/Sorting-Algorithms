@@ -1,6 +1,5 @@
 // Load application styles
 import "../assets/styles/index.less";
-import { reject } from "lodash";
 
 const $buttonConfirm = document.querySelector("#button-confirm");
 const $inputData = document.querySelector("#input-data");
@@ -53,7 +52,7 @@ function checkInputValidation() {
   }
 
   const isOverRange = inputData.some(
-    (currentNumber) => +currentNumber < 1 || +currentNumber > 25
+    (currentNumber) => currentNumber < 1 || currentNumber > 25
   );
 
   if (isOverRange) {
@@ -78,8 +77,8 @@ function visualizeData(data) {
 
   $sortingSpace.innerHTML = "";
 
-  data.forEach((number) => {
-    const node = createNode(number);
+  data.forEach((number, index) => {
+    const node = createNode(number, index);
     $sortingSpace.appendChild(node);
   });
 
@@ -87,10 +86,12 @@ function visualizeData(data) {
   $buttonStartSorting.classList.remove("display-none");
 }
 
-function createNode(number) {
+function createNode(number, index) {
   const node = document.createElement("div");
   node.classList.add("node");
+  node.classList.add("trasition-effect");
   node.dataset.value = number;
+  node.dataset.absoluteIndex = index;
 
   const text = document.createElement("span");
   text.classList.add("node-element");
@@ -108,18 +109,16 @@ function createNode(number) {
 }
 
 async function bubbleSort(nodes) {
-  // nodes = Array.from(nodes);         <------- 이 부분입니다 켄님!!!! 늘 고생이 많으십니다!!!!
-  // debugger;
   for (let i = 0; i < nodes.length - 1; i++) {
     let sortCount = 0;
 
     for (let j = 0; j < nodes.length - 1 - i; j++) {
-      const currentNumber = nodes[j];
+      const currentNode = nodes[j];
       const nextNode = nodes[j + 1];
 
-      await hightlightNode(currentNumber, nextNode);
-      sortCount += await compareNode(currentNumber, nextNode);
-      await unhighlightNode(currentNumber, nextNode);
+      await hightlightNode(currentNode, nextNode);
+      sortCount += await compareNode(currentNode, nextNode);
+      await unhighlightNode(currentNode, nextNode);
     }
 
     if (!sortCount) break;
@@ -137,7 +136,7 @@ function hightlightNode(currentNode, nextNode) {
       currentBar.classList.add("highlight");
       nextBar.classList.add("highlight");
       resolve();
-    }, 700);
+    }, 500);
   });
 }
 
@@ -147,22 +146,33 @@ function unhighlightNode(currentNode, nextNode) {
       currentNode.children[0].classList.remove("highlight");
       nextNode.children[0].classList.remove("highlight");
       resolve();
-    }, 700);
+    }, 500);
   });
 }
 
 function compareNode(currentNode, nextNode) {
   return new Promise((resolve, reject) => {
     let isSorted = false;
+    currentNode.classList.add("trasition-effect");
+    nextNode.classList.add("trasition-effect");
 
     setTimeout(() => {
-      if (+currentNode.dataset.value > +nextNode.dataset.value) {
-        $sortingSpace.insertBefore(nextNode, currentNode);
+      if (Number(currentNode.dataset.value) > Number(nextNode.dataset.value)) {
+        currentNode.style.transform = "translate(100%)";
+        nextNode.style.transform = "translate(-100%)";
         isSorted = true;
+
+        setTimeout(() => {
+          $sortingSpace.insertBefore(nextNode, currentNode);
+          currentNode.classList.remove("trasition-effect");
+          nextNode.classList.remove("trasition-effect");
+          currentNode.style.transform = "none";
+          nextNode.style.transform = "none";
+        }, 500);
       }
 
       isSorted ? resolve(1) : resolve(0);
-    }, 700);
+    }, 500);
   });
 }
 
@@ -172,39 +182,110 @@ function colorizeNode(nodes) {
   });
 }
 
-async function mergeSort(nodes) {
+function mergeSort(nodes) {
   if (nodes.length < 2) {
     return nodes;
   }
+
   const sortedGroup = [];
   const middle = Math.floor(nodes.length / 2);
-  const leftGroup = await mergeSort(nodes.slice(0, middle));
-  const rightGroup = await mergeSort(nodes.slice(middle));
-  console.log(leftGroup[0]);
-  await down(leftGroup[0], rightGroup[0]);
+  const leftGroup = mergeSort(nodes.slice(0, middle));
+  const rightGroup = mergeSort(nodes.slice(middle));
+
+  mergeSortQueue.push(
+    pullDownBar.bind(this, leftGroup.slice(), rightGroup.slice())
+  );
+
   while (leftGroup.length && rightGroup.length) {
-    if (+leftGroup[0].dataset.value < +rightGroup[0].dataset.value) {
+    if (
+      Number(leftGroup[0].dataset.value) < Number(rightGroup[0].dataset.value)
+    ) {
       sortedGroup.push(leftGroup.shift());
     } else {
       sortedGroup.push(rightGroup.shift());
     }
   }
 
-  while (leftGroup.length) sortedGroup.push(leftGroup.shift());
-  while (rightGroup.length) sortedGroup.push(rightGroup.shift());
+  while (leftGroup.length) {
+    sortedGroup.push(leftGroup.shift());
+  }
+  while (rightGroup.length) {
+    sortedGroup.push(rightGroup.shift());
+  }
 
+  mergeSortQueue.push(pullUpBar.bind(this, sortedGroup.slice()));
   return sortedGroup;
 }
 
-function down(left, right) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      right.children[0].style.backgroundColor = left.children[0].style.backgroundColor;
-      left.style.top = "50%";
-      right.style.top = "50%";
-    }, 1000);
+function pullDownBar(leftGroup, rightGroup, currentQueueIndex) {
+  const leftGroupColor = leftGroup[0].children[0].style.backgroundColor;
 
-  });
+  setTimeout(() => {
+    rightGroup.forEach((node, index) => {
+      node.children[0].style.backgroundColor = leftGroupColor;
+      node.style.top = "50%";
+      node.dataset.index = leftGroup.length + index;
+    });
+
+    leftGroup.forEach((node, index) => {
+      node.style.top = "50%";
+      node.dataset.index = index;
+    });
+
+    currentQueueIndex++;
+    if (currentQueueIndex >= mergeSortQueue.length) return;
+    mergeSortQueue[currentQueueIndex](currentQueueIndex);
+  }, 1000);
+}
+
+function findleftNodesLength(node) {
+  let leftNodeCount = 0;
+
+  function find(node) {
+    if (!node) return;
+    leftNodeCount++;
+    find(node.previousSibling);
+  }
+
+  find(node.previousSibling);
+  return leftNodeCount;
+}
+
+function pullUpBar(nodes, currentQueueIndex) {
+  let currentIndex = 0;
+
+  const existingFirstNode = nodes.find((node) => node.dataset.index === "0");
+  const leftNodesLength = findleftNodesLength(existingFirstNode);
+
+  function pullUpCurrentBar(currentIndex) {
+    if (currentIndex >= nodes.length) {
+      currentQueueIndex++;
+      if (currentQueueIndex >= mergeSortQueue.length) {
+        $buttonConfirm.addEventListener("click", checkInputValidation);
+        return;
+      }
+      mergeSortQueue[currentQueueIndex](currentQueueIndex);
+      return;
+    }
+
+    setTimeout(() => {
+      const currentNode = nodes[currentIndex];
+      const originalNodeIndex = Number(currentNode.dataset.absoluteIndex);
+      const changedNodeIndex = currentIndex + leftNodesLength;
+      const difference = 100 * (changedNodeIndex - originalNodeIndex);
+
+      currentNode.style.top = "0%";
+      currentNode.style.transform = `translate(${difference}%)`;
+      // debugger;
+      // console.log(nodes[currentIndex + 1]);
+      // console.log(currentNode);
+      // $sortingSpace.insertBefore(nodes[currentIndex + 1], currentNode);
+      currentIndex++;
+      pullUpCurrentBar(currentIndex);
+    }, 1000);
+  }
+
+  pullUpCurrentBar(currentIndex);
 }
 
 function checkSortType() {
@@ -215,13 +296,16 @@ function checkSortType() {
   }
 
   if ($selectionMergeSort.checked) {
+    let index = 0;
     colorizeNode(Array.from(nodes));
     mergeSort(Array.from(nodes));
+    mergeSortQueue[index](index);
   }
 
   $buttonStartSorting.classList.add("display-none");
   $buttonConfirm.removeEventListener("click", checkInputValidation);
 }
 
+const mergeSortQueue = [];
 $buttonConfirm.addEventListener("click", checkInputValidation);
 $buttonStartSorting.addEventListener("click", checkSortType);
