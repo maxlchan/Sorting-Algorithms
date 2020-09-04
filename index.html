@@ -13,24 +13,25 @@
     <div id="sorting-space"></div>
     <div id="question-container">
       <div id="question-data-wrap">
-        <p class="question-required">Enter the numbers you want to sort</br>
-          (Limit number of items = 10, </br>
-          Number range = 1 ~ 25)</p>
-        <input id="input-data" placeholder="ex) 3,6,7,1,2,10,25" value="6,5,4,3,2,1"/>
+        <p class="question-required">Enter the numbers you want to sort</p>
+        <input id="input-data" placeholder="ex) 3,6,7,1,2,10,25" /><br>
         <input id="button-confirm" type="button" value="Confirm" />
+        <input id="button-random" type="button" value="Random" />
       </div>
       <div id="question-sort-wrap">
         <p class="question-required">Select the Sorting Algorithms</p>
         <div>
-          <input type="radio" name="sort" id="select-bubble-sort" value="bubblesort" />
+          <input type="radio" name="sort" id="select-bubble-sort" value="bubblesort" checked />
           <label for="sort">Bubble Sort</label>
-          <input type="radio" name="sort" id="select-merge-sort" value="mergesort" checked/>
+          <input type="radio" name="sort" id="select-merge-sort" value="mergesort" />
           <label for="sort">Merge Sort</label>
         </div>
       </div>
       <div>
         </br>
-        <input id="button-start" class="display-none" type="button" value="Start Sorting" />
+        <button id="button-start" class="button display-none" style="vertical-align:middle">
+          <span>Start</span>
+        </button>
       </div>
 
     </div>
