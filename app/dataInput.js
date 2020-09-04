@@ -39,13 +39,13 @@ function checkInputValidation() {
     return;
   }
 
-  if (isLengthRangeOver) {
-    throwGuide("Put between 2 and 10 items");
+  if (isNumberRangeOver) {
+    throwGuide("Put the number between from 1 and to 25");
     return;
   }
 
-  if (isNumberRangeOver) {
-    throwGuide("Put the number between from 1 and to 25");
+  if (isLengthRangeOver) {
+    throwGuide("Put between 2 and 10 items");
     return;
   }
 
