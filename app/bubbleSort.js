@@ -1,4 +1,4 @@
-import { checkInputValidation, putDataRandom } from "./dataInput";
+import { checkInput, putDataRandom } from "./dataInput";
 
 const $buttonConfirm = document.querySelector("#button-confirm");
 const $buttonRandom = document.querySelector("#button-random");
@@ -38,7 +38,7 @@ async function bubbleSort(nodes) {
   }
 
   showBubbleSortEnd();
-  $buttonConfirm.addEventListener("click", checkInputValidation);
+  $buttonConfirm.addEventListener("click", checkInput);
   $buttonRandom.addEventListener("click", putDataRandom);
 }
 

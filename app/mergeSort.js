@@ -1,4 +1,4 @@
-import { checkInputValidation, putDataRandom } from "./dataInput";
+import { checkInput, putDataRandom } from "./dataInput";
 import { wait } from "./bubbleSort";
 
 const $buttonConfirm = document.querySelector("#button-confirm");
@@ -9,7 +9,7 @@ const COLOR_DATA = {
   RED: "#FF5722",
   ORANGE: "#FFC107",
   YELLOW: "#FFEB3B",
-  Olivine: "#9CCC65",
+  OlIVINE: "#9CCC65",
   GREEN: "#26A69A",
   SKY_BLULE: "#26C6DA",
   BLUE: "#42A5F5",
@@ -88,7 +88,7 @@ function pullUpNodes(group) {
 
   function pullUpCurrentNode(currentIndex) {
     if (currentIndex >= group.length) {
-      changeDomPoistion(group);
+      changeElementPosition(group);
 
       return;
     }
@@ -111,7 +111,7 @@ function pullUpNodes(group) {
   pullUpCurrentNode(initialIndex);
 }
 
-function changeDomPoistion(group) {
+function changeElementPosition(group) {
   setTimeout(() => {
     const lastNode = group[group.length - 1];
 
@@ -128,7 +128,7 @@ function changeDomPoistion(group) {
 
     if (!animationQueue.length) {
       showMergeSortEnd();
-      $buttonConfirm.addEventListener("click", checkInputValidation);
+      $buttonConfirm.addEventListener("click", checkInput);
       $buttonRandom.addEventListener("click", putDataRandom);
 
       return;

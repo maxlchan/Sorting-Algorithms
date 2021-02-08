@@ -22,7 +22,7 @@ function throwGuide(text) {
   isGuided = true;
 }
 
-function checkInputValidation() {
+function checkInput() {
   const inputData = $inputData.value.split(",");
   const isLengthRangeOver = inputData.length < 2 || inputData.length > 10;
   const isNumberRangeOver = inputData.some(
@@ -104,4 +104,4 @@ function putDataRandom() {
 
 $buttonRandom.addEventListener("click", putDataRandom);
 
-export { checkInputValidation, putDataRandom };
+export { checkInput, putDataRandom };

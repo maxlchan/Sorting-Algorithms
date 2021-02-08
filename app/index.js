@@ -1,6 +1,6 @@
 // Load application styles
 import "../assets/styles/index.less";
-import { checkInputValidation, putDataRandom } from "./dataInput";
+import { checkInput, putDataRandom } from "./dataInput";
 import { bubbleSort } from "./bubbleSort";
 import { colorizeNode, mergeSort, animationQueue } from "./mergeSort";
 
@@ -28,9 +28,9 @@ function checkSortType() {
   }
 
   $buttonStartSorting.classList.add("display-none");
-  $buttonConfirm.removeEventListener("click", checkInputValidation);
+  $buttonConfirm.removeEventListener("click", checkInput);
   $buttonRandom.removeEventListener("click", putDataRandom);
 }
 
-$buttonConfirm.addEventListener("click", checkInputValidation);
+$buttonConfirm.addEventListener("click", checkInput);
 $buttonStartSorting.addEventListener("click", checkSortType);
